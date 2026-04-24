@@ -1,7 +1,7 @@
 ---
 name: design-nexus
 description: >
-  The universal nexus for design systems. Transforms Figma design systems into /specs/ — the authoritative source of truth where design, code, and documentation converge. Generates human+machine readable specifications capturing tokens, components, variants, states, and the WHY behind every design decision. Validates shadcn/ui conventions, enables bidirectional Figma ↔ code sync to prevent drift, and exports to Style Dictionary, Tailwind, TypeScript, and Figma Tokens. Use when: you need to document a design system, bridge designer-developer handoff, validate Figma against code, enforce design conventions, or create specifications that serve designers (readable), developers (typed), and AI (structured). Works with ANY shadcn/ui-based system. Four modes: Hardcore (full system audit), Soft (single component deep-dive), Spec (custom requirements validation), Sync (bidirectional drift detection).
+  The universal nexus for design systems. Transforms Figma design systems into /specs/ — the authoritative source of truth where design, code, and documentation converge. Generates human+machine readable specifications capturing tokens, components, variants, states, and the WHY behind every design decision. Validates shadcn/ui conventions, AUTOMATICALLY FIXES violations in Figma (v2.0), enables bidirectional Figma ↔ code sync to prevent drift, and exports to Style Dictionary, Tailwind, TypeScript, and Figma Tokens. Use when: you need to document a design system, bridge designer-developer handoff, validate Figma against code, enforce design conventions, auto-fix shadcn/ui violations, or create specifications that serve designers (readable), developers (typed), and AI (structured). Works with ANY shadcn/ui-based system. Five modes: Hardcore (full system audit), Soft (single component deep-dive), Fix (auto-fix violations in Figma), Spec (custom requirements validation), Sync (bidirectional drift detection).
 ---
 
 # Design Nexus
@@ -147,7 +147,7 @@ If detected:
 
 **2. Check for auto-approve flag** (testing mode):
 
-If the user's prompt contains `--auto-approve` or explicitly states "skip approval" or "auto-approve", set `AUTO_APPROVE_MODE = true`. This will bypass the Phase 3 approval checkpoint and proceed directly to writing files.
+If the user's prompt contains `--auto-approve` or explicitly states "skip approval" or "auto-approve", set `AUTO_APPROVE_MODE = true`. This will bypass the Phase 4 approval checkpoint and proceed directly to writing files.
 
 **Defaults**:
 - `MODE = "HARDCORE"` (full system audit)
@@ -314,7 +314,295 @@ Review the entire system for shadcn/ui compliance:
 
 ---
 
-### Phase 2 — Generate /specs/ (In-Memory)
+### Phase 2 — Fix Violations in Figma (Optional, Auto-Triggered)
+
+**This is the killer feature of v2.0: The skill doesn't just document violations — it fixes them.**
+
+**When this phase triggers:**
+- Automatically after Phase 1 if violations are found
+- Only if violations can be auto-fixed
+- User approval required (unless `--auto-fix` flag present)
+
+**Skip conditions:**
+- No violations found (100% compliant)
+- User declines fixes
+- User includes `--skip-fixes` in prompt
+
+---
+
+#### Fix Categorization
+
+All violations from Phase 1 Pass 3 are categorized into 3 tiers:
+
+**Tier 1: Zero-Risk Fixes** (Always safe, no visual changes, no instance breakage)
+- Rename component properties: `type` → `variant`, `scale` → `size`
+- Rename variant values: `filled` → `primary`, `danger` → `destructive`
+- Set variable scopes from `ALL_SCOPES` to specific scopes (improves token picker UX)
+- Add missing component descriptions (metadata only)
+
+**Tier 2: Low-Risk Fixes** (Safe with approval, minor visual changes possible)
+- Bind hardcoded colors to existing variables (if exact match exists)
+- Bind hardcoded spacing values to existing variables
+- Bind hardcoded radius values to existing variables
+
+**Tier 3: Requires Manual Review** (High risk or requires designer judgment)
+- Touch targets below 44×44px (requires padding/size adjustments)
+- Missing states (requires creating new variant frames)
+- Contrast failures (requires color value changes)
+- Missing focus rings (requires adding stroke effects)
+
+**Phase 2 only fixes Tier 1 + Tier 2** — Tier 3 violations are documented but not auto-fixed.
+
+---
+
+#### User Approval Workflow
+
+After Phase 1 completes, present the fix plan:
+
+```
+✓ Phase 1 complete: Audited 47 components — 62% shadcn/ui compliant
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ VIOLATIONS FOUND: 18 total (12 auto-fixable, 6 manual)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+┌─────────────────────────────────────────────────────┐
+│ TIER 1: Zero-Risk Fixes (8 violations)              │
+│ Safe to auto-fix — no visual changes, no breakage   │
+└─────────────────────────────────────────────────────┘
+
+Prop Naming (5):
+  • Button: "type" → "variant"
+  • Input: "scale" → "size"
+  • Select: "kind" → "variant"
+  • Checkbox: "state" → "checked"
+  • Switch: "toggled" → "checked"
+
+Variant Naming (3):
+  • Button/filled → Button/primary
+  • Button/danger → Button/destructive
+  • Input/error → Input/destructive
+
+┌─────────────────────────────────────────────────────┐
+│ TIER 2: Low-Risk Fixes (4 violations)               │
+│ Minor visual changes possible — requires approval    │
+└─────────────────────────────────────────────────────┘
+
+Hardcoded Colors (4):
+  • Button/primary bg: #0369A1 → bind to {cta} variable
+  • Input/default border: #E2E8F0 → bind to {border} variable
+  • Select/default bg: #FFFFFF → bind to {surface} variable
+  • Checkbox/checked fill: #0369A1 → bind to {cta} variable
+
+┌─────────────────────────────────────────────────────┐
+│ TIER 3: Requires Manual Review (6 violations)       │
+│ Not auto-fixed — documented in /specs/ for designer │
+└─────────────────────────────────────────────────────┘
+
+Touch Targets (3):
+  • Button/sm: 36×36px (needs 44×44px)
+  • IconButton/sm: 32×32px (needs 44×44px)
+  • Checkbox: 16×16px (needs 44×44px)
+
+Missing States (3):
+  • Input: missing Error state
+  • Select: missing Disabled state
+  • Switch: missing Focus state
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+I can automatically fix 12 violations (Tier 1 + Tier 2) in Figma.
+Tier 3 violations will be documented in /specs/ for manual review.
+
+What would you like to do?
+
+1. Fix Tier 1 + Tier 2 (12 fixes) — Recommended ✨
+2. Fix Tier 1 only (8 fixes) — Conservative
+3. Skip all fixes, generate /specs/ as-is
+```
+
+**If `--auto-fix` flag is present in user prompt**, skip this approval and proceed with Tier 1 + Tier 2 fixes automatically.
+
+---
+
+#### Executing Fixes
+
+**If user approves fixes (option 1 or 2):**
+
+1. **Load the figma:figma-use skill** (if not already loaded)
+
+2. **Generate fix scripts** for each violation using `use_figma` API:
+
+**Tier 1 Fix: Rename Component Property**
+```javascript
+// Find component set by name
+const componentSet = figma.currentPage.findOne(n => 
+  n.type === 'COMPONENT_SET' && n.name === 'Button'
+);
+
+// Rename property
+const oldProp = componentSet.componentPropertyDefinitions['type'];
+if (oldProp) {
+  // Create new property with new name, copy definition
+  componentSet.addComponentProperty('variant', oldProp.type, oldProp.defaultValue);
+  
+  // Copy all values from old property
+  for (const [key, value] of Object.entries(componentSet.componentPropertyDefinitions)) {
+    if (key.startsWith('type#')) {
+      const newKey = key.replace('type#', 'variant#');
+      componentSet.componentPropertyDefinitions[newKey] = value;
+    }
+  }
+  
+  // Delete old property
+  delete componentSet.componentPropertyDefinitions['type'];
+}
+
+return { componentSet: componentSet.id, fixed: 'Renamed type → variant' };
+```
+
+**Tier 1 Fix: Rename Variant Value**
+```javascript
+// Find specific variant
+const button = figma.currentPage.findOne(n => 
+  n.type === 'COMPONENT' && n.name === 'Variant=filled, Size=default'
+);
+
+if (button) {
+  // Update name
+  button.name = button.name.replace('Variant=filled', 'Variant=primary');
+}
+
+return { button: button.id, fixed: 'Renamed filled → primary' };
+```
+
+**Tier 2 Fix: Bind Hardcoded Color to Variable**
+```javascript
+// Find the component variant
+const button = figma.currentPage.findOne(n => 
+  n.type === 'COMPONENT' && n.name.includes('primary')
+);
+
+// Find the variable
+const collections = await figma.variables.getLocalVariableCollectionsAsync();
+const variable = collections
+  .flatMap(c => c.variableIds)
+  .map(id => figma.variables.getVariableById(id))
+  .find(v => v.name === 'cta');
+
+if (button && variable) {
+  // Bind fills to variable
+  const fills = button.fills.map(fill => ({
+    ...fill,
+    boundVariables: { color: { type: 'VARIABLE_ALIAS', id: variable.id } }
+  }));
+  button.fills = fills;
+}
+
+return { button: button.id, variable: variable.id, fixed: 'Bound bg to {cta}' };
+```
+
+3. **Execute all fix scripts** sequentially (not parallel — order matters)
+
+4. **Collect results**:
+   - ✅ Fixed successfully: list of node IDs + what changed
+   - ❌ Failed to fix: list of errors
+   - ⚠️ Skipped (Tier 3): list of violations documented but not fixed
+
+5. **Output status after all fixes complete**:
+```
+✓ Phase 2 complete: Fixed 12/12 violations in Figma
+
+Applied fixes:
+  ✅ Renamed 5 component properties
+  ✅ Renamed 3 variant values
+  ✅ Bound 4 hardcoded colors to variables
+
+Skipped (documented in /specs/):
+  ⚠️ 3 touch target violations (manual resize needed)
+  ⚠️ 3 missing states (manual variant creation needed)
+
+New compliance score: 62% → 89% ✨
+```
+
+---
+
+#### Re-Validation
+
+After fixes are applied, **re-run Phase 1 Pass 3 (Convention Validation)** to verify:
+- Fixes worked correctly
+- Compliance score improved
+- No new violations introduced
+
+**Update the violations list** with re-validation results.
+
+---
+
+#### Fix Log
+
+Generate a fix log (in-memory for Phase 4 summary, written to /specs/ in Phase 5):
+
+```markdown
+# Fix Log — [date]
+
+## Violations Fixed
+
+### Tier 1: Property/Variant Renaming (8 fixes)
+
+| Component | Violation | Fix Applied | Node ID |
+|---|---|---|---|
+| Button | Property "type" | Renamed to "variant" | 1:234 |
+| Input | Property "scale" | Renamed to "size" | 1:456 |
+| Select | Property "kind" | Renamed to "variant" | 1:789 |
+| Button | Variant "filled" | Renamed to "primary" | 1:345 |
+| Button | Variant "danger" | Renamed to "destructive" | 1:346 |
+
+### Tier 2: Variable Binding (4 fixes)
+
+| Component | Property | Before | After | Node ID |
+|---|---|---|---|---|
+| Button/primary | Background | #0369A1 (hardcoded) | {cta} variable | 1:345 |
+| Input/default | Border | #E2E8F0 (hardcoded) | {border} variable | 1:456 |
+| Select/default | Background | #FFFFFF (hardcoded) | {surface} variable | 1:789 |
+| Checkbox/checked | Fill | #0369A1 (hardcoded) | {cta} variable | 1:567 |
+
+## Violations Skipped (Tier 3)
+
+### Touch Targets (3 violations)
+
+| Component | Current Size | Required | Manual Action Needed |
+|---|---|---|---|
+| Button/sm | 36×36px | 44×44px | Increase padding or resize component |
+| IconButton/sm | 32×32px | 44×44px | Increase padding or resize component |
+| Checkbox | 16×16px | 44×44px | Resize component, adjust touch area |
+
+### Missing States (3 violations)
+
+| Component | Missing State | Manual Action Needed |
+|---|---|---|
+| Input | Error | Create new variant with error styling |
+| Select | Disabled | Create new variant with disabled styling |
+| Switch | Focus | Add focus ring to existing variants |
+
+## Summary
+
+- **Fixed**: 12 violations (100% of Tier 1 + Tier 2)
+- **Skipped**: 6 violations (Tier 3, documented for designer)
+- **Compliance improvement**: 62% → 89% (+27 percentage points)
+```
+
+**Store this log** for inclusion in /specs/ during Phase 5.
+
+---
+
+**IMMEDIATELY after completing Phase 2 (whether fixes were applied or skipped), you MUST output this status message before moving to Phase 3**:
+```
+✓ Phase 2 complete: [Fixed N violations] OR [Skipped fixes, proceeding as-is]
+```
+
+---
+
+### Phase 3 — Generate /specs/ (In-Memory)
 
 Transform the extracted Figma data into /specs/ format **in memory** (don't write files yet).
 
@@ -745,7 +1033,7 @@ semantic:
 
 ---
 
-### Phase 3 — Summary Report (Human Review)
+### Phase 4 — Summary Report (Human Review)
 
 Generate a comprehensive summary for the user to review BEFORE writing any files.
 
@@ -899,15 +1187,15 @@ If no, I can:
   ```
   ⚡ AUTO-APPROVE MODE: Proceeding to write /specs/ directory...
   ```
-- **IMMEDIATELY skip to Phase 4 below** and begin writing files. Do NOT stop or wait.
+- **IMMEDIATELY skip to Phase 5 below** and begin writing files. Do NOT stop or wait.
 
 **If `AUTO_APPROVE_MODE = false` (default/interactive mode)**:
 - **Stop and wait for user approval.** Do not write any files yet.
-- Do not proceed to Phase 4 until the user explicitly approves.
+- Do not proceed to Phase 5 until the user explicitly approves.
 
 ---
 
-### Phase 4 — Write /specs/
+### Phase 5 — Write /specs/
 
 Write all files to the specified output directory.
 
