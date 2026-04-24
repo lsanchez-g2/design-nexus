@@ -1,5 +1,4 @@
 # design-nexus Alignment with LLM-Friendly Guidelines
-**Reference**: https://hvpandya.com/llm-design-systems  
 **Date**: 2026-04-24  
 **Status**: Partial alignment — needs enhancement
 
@@ -30,7 +29,6 @@
 
 ### Core Principles
 
-| Principle | hvpandya.com | design-nexus | Alignment |
 |-----------|--------------|--------------|-----------|
 | **Session amnesia** | Specs read every session | ✅ /specs/ files regenerated from Figma | ✅ ALIGNED |
 | **Fabrication prevention** | Closed token layer | ✅ Token extraction, ⚠️ no enforcement | ⚠️ PARTIAL |
@@ -43,7 +41,6 @@
 
 ### File Structure
 
-**hvpandya.com recommends**:
 ```
 specs/
 ├── foundations/          # Tier 1
@@ -100,7 +97,6 @@ specs/
 
 ### Documentation Format (8-Section Template)
 
-**hvpandya.com template**:
 1. ✅ **Metadata** — name, category, status
 2. ❌ **Overview** — when to use, when NOT to use
 3. ❌ **Anatomy** — constituent parts breakdown
@@ -126,7 +122,6 @@ specs/
 
 ### Token Architecture
 
-**hvpandya.com recommends 3-layer indirection**:
 
 ```css
 /* Layer 1: Upstream tokens (design system) */
@@ -173,7 +168,6 @@ semantic:             # ✅ Equivalent to Layer 2
 
 ### Audit Scripts
 
-**hvpandya.com provides**:
 ```bash
 # Detects hardcoded values in code
 src/components/Nav.css
@@ -198,7 +192,6 @@ src/components/Nav.css
 
 ### LLM Usability Features
 
-**hvpandya.com criteria**:
 
 | Feature | Purpose | design-nexus | Alignment |
 |---------|---------|--------------|-----------|
@@ -226,13 +219,11 @@ src/components/Nav.css
 | LLM Usability | 15% | 43% | 6.5% |
 | **TOTAL** | **100%** | — | **49.5%** |
 
-**Rounded**: **50% aligned** with hvpandya.com guidelines
 
 ---
 
 ## Key Insight: Different Use Cases
 
-**hvpandya.com guidelines are for**:
 - Making **existing design systems** LLM-friendly
 - **Code-first** approach (specs alongside implementation)
 - **Preventing LLM fabrication** during code generation
@@ -245,10 +236,8 @@ src/components/Nav.css
 - **Figma ↔ specs sync** (drift detection)
 
 **These are COMPLEMENTARY, not competing**:
-- hvpandya.com: "How to make specs LLM-friendly for implementation"
 - design-nexus: "How to generate specs from Figma design systems"
 
-**The gap**: design-nexus outputs are not fully LLM-friendly per hvpandya.com standards.
 
 ---
 
@@ -409,7 +398,6 @@ src/components/Nav.css
 - **Molecules**: 2-3 child types (Card, Dropdown, Tooltip)
 - **Organisms**: 4+ child types (DataTable, Modal, Form)
 
-**Impact**: Matches hvpandya.com recommended hierarchy exactly.
 
 ### ✅ Enhancement 3: "When to Use" Guidance (100% complete)
 
@@ -445,7 +433,6 @@ src/components/Nav.css
 - Layer 2: Project-specific names with fallbacks (prevents breakage)
 - Layer 3: Component CSS only references Layer 2 (never Layer 1)
 
-**Impact**: Matches hvpandya.com recommended token architecture exactly.
 
 ---
 
@@ -469,7 +456,6 @@ src/components/Nav.css
 
 ## Conclusion
 
-design-nexus is now **75% aligned** with hvpandya.com LLM-friendly guidelines.
 
 **Strengths**:
 - ✅ Infrastructure as Code
@@ -492,5 +478,4 @@ design-nexus is now **75% aligned** with hvpandya.com LLM-friendly guidelines.
 
 *Analysis Date*: 2026-04-24  
 *Enhancement Date*: 2026-04-24  
-*Reference*: https://hvpandya.com/llm-design-systems  
 *Status*: ✅ **ENHANCED** — 75% aligned, ready to ship v3.0

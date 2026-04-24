@@ -7,9 +7,7 @@
 
 ## Overview
 
-Enhanced design-nexus from **50% → 75%** alignment (+25 points) with hvpandya.com LLM-friendly design system guidelines.
 
-**Reference**: https://hvpandya.com/llm-design-systems  
 **Analysis**: See `/ALIGNMENT_ANALYSIS.md`
 
 ---
@@ -35,7 +33,6 @@ Enhanced design-nexus from **50% → 75%** alignment (+25 points) with hvpandya.
 └── patterns/          # Tier 3: Layout rules, composition
 ```
 
-**Impact**: Matches hvpandya.com recommended hierarchy exactly.
 
 ---
 
@@ -95,7 +92,6 @@ Added CSS variable export alongside Style Dictionary JSON:
 - Layer 2: Project-specific names + fallbacks (prevents breakage)
 - Layer 3: Component CSS only references Layer 2
 
-**Impact**: Matches hvpandya.com token architecture exactly.
 
 ---
 
@@ -144,7 +140,6 @@ Generated pattern files in `/specs/patterns/`:
    - Updated alignment percentage
 
 4. **ALIGNMENT_ANALYSIS.md** (NEW)
-   - Comprehensive comparison against hvpandya.com guidelines
    - Before/after scores for each category
    - Implementation status of all enhancements
    - Remaining gaps (deferred to v3.1)
@@ -204,10 +199,8 @@ Deferred to future releases:
 
 This makes it the **GOAT** — not just Figma extraction, but production-ready LLM-optimized output.
 
-**75% aligned with hvpandya.com standards** — among the highest in the industry.
 
 ---
 
 *Enhancement Date*: 2026-04-24  
-*Reference*: https://hvpandya.com/llm-design-systems  
 *Status*: ✅ SHIPPED — Production ready

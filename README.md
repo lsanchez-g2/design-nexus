@@ -8,7 +8,6 @@ Transforms Figma design systems into `/specs/` — a machine+human readable spec
 
 **The evolution:** design-nexus now generates truly LLM-optimized specifications following industry best practices.
 
-**Alignment**: **75%** with hvpandya.com LLM-friendly design system guidelines (+25% from baseline)
 
 ### v3.0 Enhanced Features (Production)
 
@@ -329,5 +328,4 @@ Built with ❤️ using [Claude Code](https://claude.ai/code) and [Figma MCP](ht
 
 **Version**: 3.0.0-enhanced  
 **Status**: ✅ Production Ready — LLM-Optimized Architecture  
-**Alignment**: 75% with hvpandya.com LLM-friendly standards  
 **Release Date**: 2026-04-24

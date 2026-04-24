@@ -954,7 +954,6 @@ After implementation:
 
 ## References
 
-1. **LLM Design Systems Article**: https://hvpandya.com/llm-design-systems  
    Key insight: Design decisions as infrastructure, spec files capture WHY
 
 2. **shadcn/ui Conventions**: https://ui.shadcn.com/docs  

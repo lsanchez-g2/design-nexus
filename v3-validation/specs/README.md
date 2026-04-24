@@ -107,7 +107,6 @@ See `atoms/Button.md` for detailed audit results and recommendations.
 
 ## LLM-Friendly Alignment
 
-This specification format is **75% aligned** with hvpandya.com LLM-friendly design system guidelines:
 
 - ✅ Three-tier file hierarchy (foundations → atoms/molecules/organisms → patterns)
 - ✅ 8-section component template (Overview, Anatomy, Props, States, Token Bindings, Code Examples, Cross-References)
@@ -115,7 +114,6 @@ This specification format is **75% aligned** with hvpandya.com LLM-friendly desi
 - ✅ tokens.css with 3-layer indirection
 - ✅ Pattern documentation (layout rules, responsive patterns, composition)
 
-**Reference**: https://hvpandya.com/llm-design-systems
 
 ---
 
