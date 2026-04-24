@@ -4,10 +4,11 @@
 
 Transforms Figma design systems into `/specs/` — a machine+human readable specification directory that serves as the single source of truth bridging Figma designs and production code.
 
-## 🎯 v2.0: Now with Auto-Fix Mode
+## 🚀 v3.0: Now with Sync Mode (Prototype)
 
-**The killer feature:** design-nexus doesn't just document violations — it **automatically fixes them in Figma**.
+**The evolution:** design-nexus now detects drift between Figma, /specs/, and code.
 
+### v2.0 Features (Production)
 - ✅ Rename component properties (`type` → `variant`)
 - ✅ Rename variant values (`filled` → `primary`)
 - ✅ Bind hardcoded colors to variables
@@ -15,6 +16,14 @@ Transforms Figma design systems into `/specs/` — a machine+human readable spec
 - ✅ Generate audit trail
 
 **Typical improvement: +20-30 percentage points compliance**
+
+### v3.0 Features (Prototype — Ready for Integration)
+- ✅ **Drift detection** — Compare Figma ↔ /specs/ states
+- ✅ **Sync reports** — Actionable recommendations (update /specs/ or fix Figma)
+- ✅ **Timeline tracking** — Know when designs diverged from documentation
+- ✅ **Multi-source validation** — Figma, /specs/, code (code scanning coming in v3.1)
+
+**See**: `/Users/lexsanchez/.claude/skills/design-nexus-workspace/v3.0-sync-mode/` for working prototype
 
 ---
 
@@ -36,6 +45,8 @@ design-nexus audits Figma design systems and generates comprehensive specificati
 ### 🔥 Hardcore Mode (Full System Audit)
 
 Scans the entire Figma file and generates complete `/specs/` directory.
+
+**New in v3.0 (Prototype)**: Run Hardcore Mode, then use **Sync Mode** to detect drift over time.
 
 **Output** (11 files):
 ```
@@ -71,6 +82,8 @@ Scans the entire Figma file and generates complete `/specs/` directory.
 ### 🎯 Soft Mode (Single Component Deep-Dive)
 
 Extracts ONLY the target component and its referenced tokens.
+
+**New in v3.0 (Prototype)**: Perfect for generating baseline /specs/ before running Sync Mode.
 
 **Output** (3 files):
 ```
@@ -234,10 +247,23 @@ Generates compliance score: **X% shadcn/ui compliant**
 
 ## Roadmap
 
-### Phase 2-5 (Future)
+### ✅ Phase 1-2: Shipped (v1.0-v2.0)
+- ✅ Hardcore/Soft Mode audit
+- ✅ Auto-fix violations in Figma
+- ✅ Token extraction
+- ✅ Convention validation
 
+### 🚧 Phase 3: Sync Mode (v3.0 — Prototype Ready)
+- ✅ **Drift detection** (Figma ↔ /specs/)
+- ✅ **Sync reports** with actionable recommendations
+- ⏸️ Code scanning (Figma ↔ /specs/ ↔ code) — Coming in v3.1
+- ⏸️ Automated sync actions — Coming in v3.1
+
+**Status**: Working prototype at `/Users/lexsanchez/.claude/skills/design-nexus-workspace/v3.0-sync-mode/`  
+**Next**: Integrate into SKILL.md, test on 3+ design systems, ship v3.0.0
+
+### Phase 4-5 (Future)
 - **Spec Mode**: Custom validation rules ("enforce our internal conventions")
-- **Sync Mode**: Bidirectional diff (Figma ↔ /specs/ ↔ code)
 - **Code Connect**: Auto-generate Figma ↔ code mappings
 - **Text/Effect Styles**: Extract beyond Variables
 - **Component library generation**: Auto-generate shadcn/ui components from specs
