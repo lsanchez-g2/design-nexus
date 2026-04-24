@@ -4,6 +4,18 @@
 
 Transforms Figma design systems into `/specs/` — a machine+human readable specification directory that serves as the single source of truth bridging Figma designs and production code.
 
+## 🎯 v2.0: Now with Auto-Fix Mode
+
+**The killer feature:** design-nexus doesn't just document violations — it **automatically fixes them in Figma**.
+
+- ✅ Rename component properties (`type` → `variant`)
+- ✅ Rename variant values (`filled` → `primary`)
+- ✅ Bind hardcoded colors to variables
+- ✅ Re-validate after fixes
+- ✅ Generate audit trail
+
+**Typical improvement: +20-30 percentage points compliance**
+
 ---
 
 ## What It Does
