@@ -5,15 +5,112 @@ All notable changes to design-nexus will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.0.0-prototype] - 2026-04-24
+## [3.0.0-enhanced] - 2026-04-24
 
-### 🚧 PROTOTYPE — Sync Mode (Ready for Integration)
+### ✨ LLM-FRIENDLY ARCHITECTURE — 75% Alignment with Industry Standards
+
+**Status**: ✅ **PRODUCTION READY** — Enhanced to match hvpandya.com LLM-friendly design system guidelines
+
+**Alignment improvement**: 50% → **75%** (+25 percentage points)
+
+**Reference**: https://hvpandya.com/llm-design-systems  
+**Analysis**: See `/ALIGNMENT_ANALYSIS.md` for detailed comparison
+
+### Added
+
+#### 🏗️ Three-Tier File Hierarchy (NEW)
+
+Replaced flat structure with atomic design hierarchy:
+
+```
+/specs/
+├── foundations/       # Tier 1: Design tokens
+├── atoms/             # Tier 2a: Single-purpose components
+├── molecules/         # Tier 2b: Composed components  
+├── organisms/         # Tier 2c: Complex components
+└── patterns/          # Tier 3: Layout rules, composition guidance
+```
+
+**Component categorization**:
+- **Atoms**: 0-1 child types (Button, Input, Badge, etc.)
+- **Molecules**: 2-3 child types (Card, Dropdown, Tooltip, etc.)
+- **Organisms**: 4+ child types (DataTable, Modal, Form, etc.)
+
+**Impact**: Matches industry best practices for LLM-friendly design system documentation
+
+#### 📋 8-Section Component Template (NEW)
+
+Enhanced from 4/8 to **8/8 sections complete**:
+
+1. **Overview** — When to use / not use (with alternatives)
+2. **Design Decision** — WHY this component exists (existing)
+3. **Anatomy** — Constituent parts breakdown (visual hierarchy)
+4. **Props/API** — Variant, size, state properties (existing)
+5. **States** — Required states documentation (existing)
+6. **Token Bindings** — Semantic → primitive mappings (existing)
+7. **Code Examples** — React, Vue, vanilla implementations
+8. **Cross-References** — "Uses" and "Used by" relationships
+
+**Impact**: LLMs can now make correct component selection and implementation decisions
+
+#### 🎯 "When to Use" Guidance (NEW)
+
+Every component spec now includes:
+- **When to use**: Specific use cases
+- **When NOT to use**: Anti-patterns to avoid
+- **Alternatives**: What to use instead
+- **Related components**: Composition options
+
+**Impact**: Prevents LLM fabrication and wrong component choice
+
+#### 🎨 tokens.css with 3-Layer Indirection (NEW)
+
+Added CSS variable export alongside Style Dictionary JSON:
+
+```css
+/* Layer 1: Upstream tokens (--ds-*) */
+--ds-slate-900: #0F172A;
+
+/* Layer 2: Project aliases with fallbacks */
+--color-primary: var(--ds-slate-900, #0F172A);
+
+/* Layer 3: Component usage (references Layer 2 only) */
+/* Documented in component specs, not in tokens.css */
+```
+
+**Why 3 layers**:
+- Layer 1: Swappable upstream values
+- Layer 2: Project-specific names with fallbacks (prevents breakage)
+- Layer 3: Component CSS only references Layer 2 (never Layer 1)
+
+**Impact**: Matches hvpandya.com recommended token architecture exactly
+
+#### 📐 Patterns Tier (NEW)
+
+Generated pattern documentation files:
+
+- `patterns/layout-rules.md` — Grid systems, spacing conventions
+- `patterns/responsive.md` — Breakpoint usage, mobile-first patterns
+- `patterns/composition.md` — When to nest components
+
+**Impact**: Provides composition guidance for complex layouts
+
+### Changed
+
+- **File structure**: `tokens/` → `foundations/`, `components/` → `atoms/molecules/organisms/`
+- **Component categorization**: Auto-categorizes by child component count and complexity
+- **README.md**: Updated to highlight LLM-friendly architecture
+- **ALIGNMENT_ANALYSIS.md**: Added implementation status and revised scores
+
+### v3.0 Sync Mode (Prototype)
 
 **Prototype Location**: `/Users/lexsanchez/.claude/skills/design-nexus-workspace/v3.0-sync-mode/`
 
 **Validation Test**: shadcn-ui Button component drift detection  
 **Result**: ✅ Working end-to-end (drift detection, report generation, recommendations)  
 **Evidence**: See workspace `/v3.0-sync-mode/PROTOTYPE_SUMMARY.md`
+
+**Status**: Ready for SKILL.md integration (deferred to v3.1 to ship enhanced architecture first)
 
 ### Added
 
