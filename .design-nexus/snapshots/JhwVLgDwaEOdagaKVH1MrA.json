@@ -1,0 +1,210 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T11:45:00.000Z",
+  "figma": {
+    "fileKey": "JhwVLgDwaEOdagaKVH1MrA",
+    "fileName": "Stripe Elements",
+    "fileUrl": "https://www.figma.com/design/JhwVLgDwaEOdagaKVH1MrA/Stripe-Elements"
+  },
+  "components": {
+    "Error / CVC": {
+      "type": "COMPONENT",
+      "id": "4:13",
+      "name": "Error / CVC",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 62
+    },
+    "Error / Card": {
+      "type": "COMPONENT",
+      "id": "4:12",
+      "name": "Error / Card",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 62
+    },
+    "Active / Completed": {
+      "type": "COMPONENT",
+      "id": "4:11",
+      "name": "Active / Completed",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 39
+    },
+    "Active / Active CVC": {
+      "type": "COMPONENT",
+      "id": "4:10",
+      "name": "Active / Active CVC",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 39
+    },
+    "Active / Card Field completed": {
+      "type": "COMPONENT",
+      "id": "4:9",
+      "name": "Active / Card Field completed",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 39
+    },
+    "Default": {
+      "type": "COMPONENT",
+      "id": "4:8",
+      "name": "Default",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 511,
+      "height": 39
+    },
+    "Visa": {
+      "type": "COMPONENT",
+      "id": "1:165",
+      "name": "Visa",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "CVC Card": {
+      "type": "COMPONENT",
+      "id": "1:164",
+      "name": "CVC Card",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16.99592399597168
+    },
+    "Diners Club": {
+      "type": "COMPONENT",
+      "id": "1:163",
+      "name": "Diners Club",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "Discover": {
+      "type": "COMPONENT",
+      "id": "1:162",
+      "name": "Discover",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "JCB": {
+      "type": "COMPONENT",
+      "id": "1:161",
+      "name": "JCB",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 23,
+      "height": 16
+    },
+    "Union Pay": {
+      "type": "COMPONENT",
+      "id": "1:160",
+      "name": "Union Pay",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "American Express": {
+      "type": "COMPONENT",
+      "id": "1:159",
+      "name": "American Express",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "Mastercard": {
+      "type": "COMPONENT",
+      "id": "1:158",
+      "name": "Mastercard",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "Card": {
+      "type": "COMPONENT",
+      "id": "1:157",
+      "name": "Card",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 16
+    },
+    "Card Error": {
+      "type": "COMPONENT",
+      "id": "1:509",
+      "name": "Card Error",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 24,
+      "height": 15.75
+    },
+    "Light": {
+      "type": "COMPONENT",
+      "id": "5:49",
+      "name": "Light",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 342.3214111328125,
+      "height": 142.44374084472656
+    },
+    "Dark": {
+      "type": "COMPONENT",
+      "id": "5:48",
+      "name": "Dark",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 342.3214111328125,
+      "height": 142.44374084472656
+    },
+    "Badge / Light / Outline": {
+      "type": "COMPONENT",
+      "id": "4:4",
+      "name": "Badge / Light / Outline",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 119,
+      "height": 26
+    },
+    "Badge / Light / Solid": {
+      "type": "COMPONENT",
+      "id": "4:5",
+      "name": "Badge / Light / Solid",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 119,
+      "height": 26
+    },
+    "Badge / Light / Solid Large": {
+      "type": "COMPONENT",
+      "id": "4:7",
+      "name": "Badge / Light / Solid Large",
+      "description": "",
+      "page": "🧩  Components",
+      "width": 149,
+      "height": 41
+    }
+  },
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": 21,
+    "totalVariables": 0,
+    "componentSets": 0,
+    "standaloneComponents": 21
+  }
+}

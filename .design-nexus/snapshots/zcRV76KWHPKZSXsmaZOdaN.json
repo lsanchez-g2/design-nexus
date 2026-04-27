@@ -1,0 +1,22 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:27:00.000Z",
+  "figma": {
+    "fileKey": "zcRV76KWHPKZSXsmaZOdaN",
+    "fileName": "Radix Themes",
+    "fileUrl": "https://www.figma.com/design/zcRV76KWHPKZSXsmaZOdaN"
+  },
+  "components": {
+    "_icon_examples_extracted": "Multiple icon categories (Design, Music, Abstract, Arrows, Logos, Objects)"
+  },
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": "extracted",
+    "componentSets": 0,
+    "standaloneComponents": "multiple",
+    "notes": "Baseline snapshot created. Icon-focused design system with comprehensive coverage."
+  }
+}

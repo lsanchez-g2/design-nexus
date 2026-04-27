@@ -1,0 +1,21 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:31:00.000Z",
+  "figma": {
+    "fileKey": "LPL5qA9J2nOYd5NaC3LIyi",
+    "fileName": "Preline UI Figma",
+    "fileUrl": "https://www.figma.com/design/LPL5qA9J2nOYd5NaC3LIyi"
+  },
+  "components": {},
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": 4191,
+    "componentSets": 30,
+    "standaloneComponents": 4161,
+    "totalVariables": 2301,
+    "notes": "Baseline snapshot created. Preline UI design system extracted. Comprehensive Tailwind CSS component library."
+  }
+}
