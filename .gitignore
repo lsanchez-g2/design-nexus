@@ -38,3 +38,6 @@ build/
 # Output directories (user-generated)
 specs/
 outputs/
+
+# design-nexus v3.2 partial snapshots (ephemeral)
+.design-nexus/snapshots/.partial/
