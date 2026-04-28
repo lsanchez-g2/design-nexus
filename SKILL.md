@@ -457,7 +457,7 @@ try {
 
 ---
 
-#### Pass 2: Extract Components
+#### Pass 2: Extract Components (Adaptive Mode, v3.3.0)
 
 **If `MODE = "HARDCORE"`**: Scan ALL component sets and standalone components
 
@@ -473,6 +473,149 @@ try {
 - Property values (primary/secondary/destructive, sm/default/lg, etc.)
 - States per variant (Default, Hover, Focus, Active, Disabled, Error, etc.)
 - Component description (if present)
+
+**Adaptive Extraction Workflow** (v3.3.0):
+
+Before extracting components, display the extraction plan and handle EXTREME density tier specially:
+
+```javascript
+function displayExtractionPlan(densityData) {
+  const batchSize = getBatchSizeForTier(densityData.tier);
+  const estimatedBatches = batchSize ? Math.ceil(densityData.totalPages / batchSize) : 'N/A';
+  
+  // Estimate extraction time based on historical data
+  const secondsPerPage = {
+    'EXTREME': 1.5, // Conservative
+    'HIGH': 0.8,
+    'MEDIUM': 0.6,
+    'LOW': 0.5,
+    'VERY_LOW': 0.4
+  };
+  
+  const estimatedDuration = Math.round(densityData.totalPages * secondsPerPage[densityData.tier]);
+  
+  console.log(`\n🔄 Starting adaptive extraction (${densityData.totalPages} pages)`);
+  console.log(`   Density tier: ${densityData.tier}`);
+  console.log(`   Component sets detected: ${densityData.totalComponentSets}`);
+  console.log(`   Initial batch size: ${batchSize || 'User prompt'} pages`);
+  console.log(`   Estimated batches: ~${estimatedBatches}`);
+  console.log(`   Estimated extraction time: ~${estimatedDuration}s\n`);
+}
+
+async function handleExtremeDensity(fileKey, densityData) {
+  const estimatedMinutes = Math.round((densityData.totalPages * 1.5) / 60);
+  
+  console.log(`\n⚠️  EXTREME density detected:`);
+  console.log(`   • ${densityData.totalComponentSets} component sets`);
+  console.log(`   • Average: ${(densityData.totalComponentSets / densityData.totalPages).toFixed(1)} per page`);
+  console.log(`   • Estimated full extraction: ~${estimatedMinutes} minutes\n`);
+  
+  // Use AskUserQuestion tool to prompt for choice
+  const choice = await askUser(
+    "Choose extraction strategy:",
+    [
+      "Strategic sampling (fast, representative ~15% coverage)",
+      "Full extraction (slow, 100% complete)",
+      "Cancel and review file"
+    ]
+  );
+  
+  if (choice === "Strategic sampling") {
+    console.log(`\n📊 Starting strategic sampling extraction...\n`);
+    return await extractComponentsStrategicSampling(fileKey, densityData);
+  } else if (choice === "Full extraction") {
+    console.log(`\n⏳ Starting full extraction (${estimatedMinutes} minutes estimated)...\n`);
+    // Proceed with adaptive batching starting at 5 pages
+    const batchPlan = { initialSize: 5, minSize: 5, maxSize: 10 };
+    return await extractComponentsAdaptive(fileKey, densityData, batchPlan);
+  } else {
+    throw new Error("User cancelled extraction");
+  }
+}
+
+async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
+  const startTime = Date.now();
+  const allComponents = {};
+  
+  let currentBatchSize = batchPlan.initialSize;
+  let currentPage = 0;
+  let batchNumber = 1;
+  
+  while (currentPage < densityData.totalPages) {
+    const endPage = Math.min(currentPage + currentBatchSize, densityData.totalPages);
+    const pagesInBatch = endPage - currentPage;
+    
+    console.log(`\n📦 Batch ${batchNumber}: Pages ${currentPage + 1}-${endPage} (${pagesInBatch} pages, batch size: ${currentBatchSize})`);
+    
+    const batchStartTime = Date.now();
+    
+    try {
+      // Extract batch with timeout monitoring
+      const batchData = await extractBatch(fileKey, currentPage, endPage);
+      
+      const batchDuration = (Date.now() - batchStartTime) / 1000;
+      
+      // Merge components
+      Object.assign(allComponents, batchData.components);
+      
+      // Display smart progress (Task 4 will implement this)
+      displaySmartProgress(currentPage, densityData.totalPages, batchDuration, densityData.tier);
+      
+      console.log(`  ✓ Batch ${batchNumber} complete (${batchDuration.toFixed(1)}s, ${Object.keys(batchData.components).length} components)\n`);
+      
+      // Adaptive batch sizing: if batch took >40s, halve size (minimum 5)
+      if (batchDuration > 40 && currentBatchSize > batchPlan.minSize) {
+        const newSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
+        console.log(`⚡ Batch duration high (${batchDuration.toFixed(1)}s) — reducing batch size: ${currentBatchSize} → ${newSize} pages\n`);
+        currentBatchSize = newSize;
+      }
+      
+      currentPage = endPage;
+      batchNumber++;
+      
+    } catch (error) {
+      console.log(`  ✗ Batch ${batchNumber} failed: ${error.message}`);
+      
+      // Retry logic: halve batch size and retry
+      if (currentBatchSize > batchPlan.minSize) {
+        const newSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
+        console.log(`  ↻ Retrying with reduced batch size: ${currentBatchSize} → ${newSize} pages\n`);
+        currentBatchSize = newSize;
+        // Don't increment currentPage — retry same range with smaller batch
+      } else {
+        // At minimum batch size, can't reduce further
+        throw new Error(
+          `Extraction failed at minimum batch size (${batchPlan.minSize} pages). ` +
+          `Try: (1) Strategic sampling, (2) Reduce file complexity in Figma, (3) Split file into smaller files.`
+        );
+      }
+    }
+  }
+  
+  const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
+  
+  console.log(`\n✓ Adaptive extraction complete (${totalDuration}s total)`);
+  console.log(`  • Total components extracted: ${Object.keys(allComponents).length}\n`);
+  
+  return allComponents;
+}
+```
+
+**Extraction flow**:
+
+1. Call `displayExtractionPlan(densityData)` to show tier, batch size, and estimated duration
+2. If `densityData.tier === 'EXTREME'`, call `handleExtremeDensity()` to prompt user
+3. Otherwise, call `extractComponentsAdaptive()` with appropriate batch plan:
+   - VERY_LOW/LOW: `{ initialSize: 20, minSize: 10, maxSize: 20 }`
+   - MEDIUM: `{ initialSize: 15, minSize: 10, maxSize: 15 }`
+   - HIGH: `{ initialSize: 10, minSize: 5, maxSize: 10 }`
+4. Adaptive loop dynamically adjusts batch size based on timeout (>40s halves size, minimum 5 pages)
+5. Retry on batch failure with halved size
+6. Error at 5-page minimum with actionable message
+
+**Strategic Sampling Note** (reuses existing v3.2.1 logic):
+
+When user selects "Strategic sampling" in EXTREME tier handling, the existing strategic sampling logic from v3.2.1 is used. This samples high-density pages representatively (~15% coverage) and completes in seconds rather than minutes.
 
 **For each variant, run the 8-point audit**:
 
@@ -587,12 +730,13 @@ The JavaScript code blocks below are **pseudocode** illustrating the logical flo
 
 **v3.2 Enhancement**: Automatically routes large files (≥50 pages) to paginated extraction to avoid MCP timeout.
 
+**v3.3.0 Enhancement**: Uses density tier from Pass 1 to determine adaptive batch sizing.
+
 ```javascript
 // Pagination constants (v3.2)
 const PAGINATION_THRESHOLD = 50;  // Pages threshold for switching to paginated mode
-const BATCH_SIZE = 10;            // Pages per batch
 
-async function extractCurrentState(fileKey, targetComponent) {
+async function extractCurrentState(fileKey, targetComponent, densityData) {
   console.log(`\n🎨 Extracting current Figma state...\n`);
   
   // Invoke figma:figma-use skill (REQUIRED)
@@ -604,8 +748,11 @@ async function extractCurrentState(fileKey, targetComponent) {
   // Route to paginated extraction if large file and system-wide sync
   if (pageCount >= PAGINATION_THRESHOLD && !targetComponent) {
     console.log(`📦 Large file detected (${pageCount} pages)`);
-    console.log(`   Switching to paginated extraction mode...\n`);
-    return await extractWithPagination(fileKey, pageCount, BATCH_SIZE);
+    console.log(`   Switching to adaptive paginated extraction mode...\n`);
+    
+    // v3.3.0: Use density-based batch sizing
+    const batchSize = getBatchSizeForTier(densityData.tier);
+    return await extractWithPagination(fileKey, pageCount, batchSize, densityData);
   }
   
   // Small files or component-specific sync use existing single-pass logic
@@ -662,7 +809,7 @@ async function extractCurrentState(fileKey, targetComponent) {
 
 **Purpose**: Extract large files (≥50 pages) in batches to avoid MCP timeout.
 
-**Batch Size**: 10 pages per batch (configurable via `BATCH_SIZE` constant).
+**Batch Size** (v3.3.0): Adaptive based on density tier (5-20 pages per batch).
 
 **Partial Snapshots**: Saved to `.design-nexus/snapshots/.partial/[fileKey]-batch-N.json` (ephemeral, gitignored).
 
@@ -672,15 +819,21 @@ async function extractCurrentState(fileKey, targetComponent) {
 
 ##### extractWithPagination()
 
-**Purpose**: Orchestrates paginated extraction across all batches.
+**Purpose**: Orchestrates paginated extraction across all batches with adaptive batch sizing.
 
 ```javascript
-async function extractWithPagination(fileKey, totalPages, batchSize) {
+async function extractWithPagination(fileKey, totalPages, batchSize, densityData) {
   const startTime = Date.now();
-  console.log(`📦 Starting paginated extraction (${totalPages} pages, batch size: ${batchSize})\n`);
+  console.log(`📦 Starting adaptive paginated extraction (${totalPages} pages)`);
+  console.log(`   Density tier: ${densityData.tier}`);
+  console.log(`   Initial batch size: ${batchSize} pages\n`);
   
-  // Determine batches
-  const totalBatches = Math.ceil(totalPages / batchSize);
+  // v3.3.0: Adaptive batch sizing based on density tier
+  let currentBatchSize = batchSize;
+  const minBatchSize = 5;
+  
+  // Determine initial batches estimate
+  const totalBatches = Math.ceil(totalPages / currentBatchSize);
   
   // Check for existing partial snapshots (resume capability)
   const existingBatches = await findExistingBatches(fileKey, totalBatches);
@@ -695,35 +848,66 @@ async function extractWithPagination(fileKey, totalPages, batchSize) {
   // Ensure .partial directory exists
   await ensureDirectory('.design-nexus/snapshots/.partial');
   
-  // Extract each batch
+  // Extract each batch with adaptive sizing
   const allComponents = {};
   let allVariables = null;
+  let currentPage = (startBatch - 1) * currentBatchSize;
+  let batchNum = startBatch;
   
-  for (let batchNum = startBatch; batchNum <= totalBatches; batchNum++) {
-    const startPage = (batchNum - 1) * batchSize;
-    const endPage = Math.min(startPage + batchSize, totalPages);
+  while (currentPage < totalPages) {
+    const endPage = Math.min(currentPage + currentBatchSize, totalPages);
+    const pagesInBatch = endPage - currentPage;
     
-    displayBatchProgress(batchNum, totalBatches, startPage, endPage);
+    displayBatchProgress(batchNum, totalBatches, currentPage, endPage);
     
     const batchStartTime = Date.now();
     
-    // Extract batch
-    const batchData = await callFigmaWithRetry(() => 
-      extractBatch(fileKey, startPage, endPage)
-    );
-    
-    const batchDuration = ((Date.now() - batchStartTime) / 1000).toFixed(1);
-    
-    // Save partial snapshot
-    await savePartialSnapshot(fileKey, batchNum, batchData);
-    
-    // Merge into accumulated state
-    Object.assign(allComponents, batchData.components);
-    if (!allVariables) {
-      allVariables = batchData.variables; // Variables only extracted once (first batch)
+    try {
+      // Extract batch with retry
+      const batchData = await callFigmaWithRetry(() => 
+        extractBatch(fileKey, currentPage, endPage)
+      );
+      
+      const batchDuration = ((Date.now() - batchStartTime) / 1000).toFixed(1);
+      
+      // Save partial snapshot
+      await savePartialSnapshot(fileKey, batchNum, batchData);
+      
+      // Merge into accumulated state
+      Object.assign(allComponents, batchData.components);
+      if (!allVariables) {
+        allVariables = batchData.variables; // Variables only extracted once (first batch)
+      }
+      
+      console.log(`  ✓ Batch ${batchNum} complete (${batchDuration}s, ${Object.keys(batchData.components).length} components)\n`);
+      
+      // v3.3.0: Adaptive batch sizing — if batch took >40s, halve size (minimum 5)
+      if (parseFloat(batchDuration) > 40 && currentBatchSize > minBatchSize) {
+        const newSize = Math.max(Math.floor(currentBatchSize / 2), minBatchSize);
+        console.log(`⚡ Batch duration high (${batchDuration}s) — reducing batch size: ${currentBatchSize} → ${newSize} pages\n`);
+        currentBatchSize = newSize;
+      }
+      
+      currentPage = endPage;
+      batchNum++;
+      
+    } catch (error) {
+      console.log(`  ✗ Batch ${batchNum} failed: ${error.message}`);
+      
+      // Retry logic: halve batch size and retry
+      if (currentBatchSize > minBatchSize) {
+        const newSize = Math.max(Math.floor(currentBatchSize / 2), minBatchSize);
+        console.log(`  ↻ Retrying with reduced batch size: ${currentBatchSize} → ${newSize} pages\n`);
+        currentBatchSize = newSize;
+        // Don't increment currentPage — retry same range with smaller batch
+      } else {
+        // At minimum batch size, can't reduce further
+        throw new Error(
+          `Extraction failed at minimum batch size (${minBatchSize} pages). ` +
+          `Try: (1) Strategic sampling, (2) Reduce file complexity in Figma, (3) Split file into smaller files.`
+        );
+      }
     }
-    
-    console.log(`  ✓ Batch ${batchNum} complete (${batchDuration}s, ${Object.keys(batchData.components).length} components)\n`);
   }
   
   const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
