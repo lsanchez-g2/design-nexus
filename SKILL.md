@@ -416,8 +416,8 @@ async function extractVariablesWithDensityDetection(fileKey) {
     densityData.totalComponents += standaloneComponents;
   }
   
-  // Calculate density tier
-  const avgComponentsPerPage = densityData.totalComponentSets / densityData.totalPages;
+  // Calculate density tier (uses classifyDensityTier helper defined in Phase 0 Setup)
+  const avgComponentsPerPage = (densityData.totalComponentSets + densityData.totalComponents) / densityData.totalPages;
   densityData.tier = classifyDensityTier(avgComponentsPerPage, densityData.totalComponentSets);
   
   return { variables, densityData };
@@ -432,8 +432,9 @@ If density detection fails (error during page iteration or component counting), 
 try {
   const { variables, densityData } = await extractVariablesWithDensityDetection(fileKey);
 } catch (error) {
+  const batchSize = getBatchSizeForTier('MEDIUM');
   console.log(`⚠️  Density detection failed: ${error.message}`);
-  console.log(`   Falling back to MEDIUM tier (10-page batches)\n`);
+  console.log(`   Falling back to MEDIUM tier (${batchSize}-page batches)\n`);
   
   const densityData = {
     tier: 'MEDIUM',
