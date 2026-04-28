@@ -1,0 +1,150 @@
+{
+  "skill_name": "design-nexus",
+  "evals": [
+    {
+      "id": 1,
+      "name": "shadcn-ui-minimal-button",
+      "prompt": "I have a Figma design system with just a Button component following shadcn/ui patterns. It has 6 variants (primary, secondary, destructive, outline, ghost, link) and 3 sizes (sm, default, lg). The file URL is: https://www.figma.com/design/5nGs36szQAw5jZAOGYkBcV/-shadcn-ui---Design-System--Community-?node-id=2-287&p=f&t=ktBm2TF4AbZZcc90-0\n\nGenerate /specs/ for this system. I want to see how well it extracts tokens, documents the Button component, and validates shadcn/ui compliance.",
+      "expected_output": "Complete /specs/ directory with:\n- tokens/ (colors, typography, spacing, radius extracted from Figma variables)\n- components/Button.md (all 6 variants × 3 sizes documented with props, states, token bindings)\n- design-decisions.md (template with TODOs)\n- conventions.md (shadcn/ui compliance validation)\n- exports/style-dictionary.json (W3C Design Token format)\n- High shadcn/ui compliance score (>90%)\n- 8-point audit results for Button component",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_exists",
+          "path": "specs/tokens/colors.yml",
+          "description": "Color token file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/tokens/typography.yml",
+          "description": "Typography token file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/tokens/spacing.yml",
+          "description": "Spacing token file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/tokens/radius.yml",
+          "description": "Radius token file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/components/Button.md",
+          "description": "Button component spec generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/design-decisions.md",
+          "description": "Design decisions file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/conventions.md",
+          "description": "Conventions file generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/exports/style-dictionary.json",
+          "description": "Style Dictionary export generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/README.md",
+          "description": "README documentation generated"
+        },
+        {
+          "type": "file_contains",
+          "path": "specs/components/Button.md",
+          "pattern": "variant",
+          "description": "Button.md documents 'variant' prop"
+        },
+        {
+          "type": "file_contains",
+          "path": "specs/conventions.md",
+          "pattern": "compliance|Compliance",
+          "description": "Conventions file includes compliance score"
+        },
+        {
+          "type": "valid_json",
+          "path": "specs/exports/style-dictionary.json",
+          "description": "Style Dictionary export is valid JSON"
+        },
+        {
+          "type": "json_contains_key",
+          "path": "specs/exports/style-dictionary.json",
+          "key": "color",
+          "description": "Style Dictionary contains color tokens"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "shadcn-ui-full-system-2026",
+      "prompt": "Audit this comprehensive shadcn/ui design system - The Ultimate UI Kit with 100+ components: https://www.figma.com/design/YKREgYnZBLQBUEWG2o4vei/shadcn-ui--The-Ultimate-UI-Kit-for-Figma--Community-?node-id=0-1&p=f&t=TPw1fHbd8oLQ4UQv-0\n\nThis should have multiple components (Button, Input, Select, Checkbox, etc.), proper token architecture with variables, and comprehensive component coverage.\n\nGenerate complete /specs/ and tell me the compliance score.",
+      "expected_output": "Complete /specs/ directory with:\n- tokens/ (colors with light/dark modes, typography, spacing, radius, shadows, motion)\n- components/ (10+ component files: Button.md, Input.md, Select.md, Checkbox.md, etc.)\n- Each component has full 8-point audit results\n- design-decisions.md and conventions.md generated\n- exports/style-dictionary.json with multi-mode support\n- Comprehensive audit report showing:\n  - Total tokens extracted (colors, typography, spacing, etc.)\n  - Total components documented\n  - Convention compliance score\n  - Any violations found\n  - Component readiness table",
+      "files": [],
+      "assertions": []
+    },
+    {
+      "id": 3,
+      "name": "validation-reporting-test",
+      "prompt": "Test the validation capabilities: Audit this 2026 design system with Figma Variables and specifically check for:\n1. shadcn/ui convention violations (wrong prop names, wrong variant names)\n2. Hardcoded colors instead of variables\n3. Missing states (hover, focus, disabled)\n4. Touch target violations (<44px)\n5. Accessibility issues (contrast, focus rings)\n\nFile: https://www.figma.com/design/3jJQE9SGgraMP87rGS7Xfo/Shadcn-ui-Figma-Library-%E2%80%93-UI-Kit--Components--Design-System--2026---Community-?node-id=5984-59776&p=f&t=a6SUrv69FbPjZ695-0\n\nEven if the system is compliant, I want to see how you report validation results.",
+      "expected_output": "Comprehensive audit report clearly showing:\n- Convention compliance score with breakdown\n- Violations flagged by category (if any):\n  - Prop naming violations\n  - Variant naming violations  \n  - Token binding violations (hardcoded values)\n  - Missing states per component\n  - Touch target failures\n  - Accessibility issues\n- Generated /specs/ with violations documented in:\n  - conventions.md (all violations listed)\n  - Each component .md file (Known Issues section populated)\n- If no violations found, clear statement of 100% compliance",
+      "files": [],
+      "assertions": [
+        {
+          "type": "file_exists",
+          "path": "audit-report.md",
+          "description": "Validation/audit report generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "README.md",
+          "description": "README with test overview generated"
+        },
+        {
+          "type": "file_exists",
+          "path": "specs/conventions.md",
+          "description": "Conventions file with violations documented"
+        },
+        {
+          "type": "file_contains",
+          "path": "audit-report.md",
+          "pattern": "compliance|Compliance|score|Score",
+          "description": "Report includes compliance score"
+        },
+        {
+          "type": "file_contains",
+          "path": "audit-report.md",
+          "pattern": "violation|Violation|issue|Issue",
+          "description": "Report documents violations or issues"
+        },
+        {
+          "type": "file_contains",
+          "path": "audit-report.md",
+          "pattern": "token|Token|variable|Variable",
+          "description": "Report includes token analysis"
+        },
+        {
+          "type": "file_contains",
+          "path": "audit-report.md",
+          "pattern": "component|Component",
+          "description": "Report includes component audit"
+        },
+        {
+          "type": "file_contains",
+          "path": "specs/conventions.md",
+          "pattern": "compliance|Compliance",
+          "description": "Conventions file shows compliance status"
+        },
+        {
+          "type": "file_contains",
+          "path": "specs/conventions.md",
+          "pattern": "✅|✓|❌|⚠",
+          "description": "Conventions file uses status indicators"
+        }
+      ]
+    }
+  ]
+}
