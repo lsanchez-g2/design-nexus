@@ -543,7 +543,7 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
   let lastEstimate = 0;
   const totalPages = densityData.totalPages;
   
-  for (let startPage = 0; startPage < totalPages; startPage += currentBatchSize) {
+  for (let startPage = 0; startPage < totalPages; ) {
     const endPage = Math.min(startPage + currentBatchSize, totalPages);
     const batchStartTime = Date.now();
     
@@ -559,6 +559,14 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
       
       const batchDuration = (Date.now() - batchStartTime) / 1000;
       totalElapsedTime += batchDuration;
+      
+      // Adaptive batch sizing: if batch took >40s, halve size (minimum 5)
+      if (batchDuration > 40 && currentBatchSize > 5) {
+        console.log(`⚠️  Batch ${batchNum} took ${batchDuration.toFixed(1)}s (>40s threshold)`);
+        console.log(`   Reducing batch size: ${currentBatchSize} → ${Math.floor(currentBatchSize / 2)} pages\n`);
+        
+        currentBatchSize = Math.max(5, Math.floor(currentBatchSize / 2));
+      }
       
       // Merge components
       Object.assign(allComponents, batchData.components);
@@ -576,14 +584,8 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
         densityData
       );
       
-      // Adaptive batch sizing: if batch took >40s, halve size (minimum 5)
-      if (batchDuration > 40 && currentBatchSize > 5) {
-        console.log(`⚠️  Batch ${batchNum} took ${batchDuration.toFixed(1)}s (>40s threshold)`);
-        console.log(`   Reducing batch size: ${currentBatchSize} → ${Math.floor(currentBatchSize / 2)} pages\n`);
-        currentBatchSize = Math.max(5, Math.floor(currentBatchSize / 2));
-      }
-      
       batchNum++;
+      startPage = endPage; // Explicit increment on SUCCESS (advance to next page)
       
     } catch (error) {
       console.log(`❌ Batch ${batchNum} failed: ${error.message}`);
@@ -593,7 +595,7 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
         console.log(`   Retrying with ${Math.floor(currentBatchSize / 2)} pages\n`);
         
         currentBatchSize = Math.max(5, Math.floor(currentBatchSize / 2));
-        continue;
+        // startPage unchanged - retry same range with smaller batch size
       } else {
         // At minimum batch size, can't reduce further
         console.log(`\n❌ Critical: Batch failed at minimum size (5 pages)`);
