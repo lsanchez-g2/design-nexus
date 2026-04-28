@@ -340,7 +340,7 @@ Use `use_figma` to extract the design system structure.
 
 **Run these extraction passes in parallel:**
 
-#### Pass 1: Extract All Variables (Tokens)
+#### Pass 1: Extract Variables + Detect Density (v3.3.0 Enhanced)
 
 Scan all variable collections in Figma and extract:
 
@@ -377,9 +377,81 @@ Scan all variable collections in Figma and extract:
 
 **Store extracted data** in memory for Phase 2 processing.
 
+**Lazy Density Detection** (v3.3.0):
+
+While iterating pages during variable extraction, count components per page with minimal overhead.
+
+```javascript
+async function extractVariablesWithDensityDetection(fileKey) {
+  const densityData = {
+    totalPages: figma.root.children.length,
+    componentsPerPage: [],
+    totalComponentSets: 0,
+    totalComponents: 0
+  };
+  
+  // Extract variables (existing v3.2.1 logic)
+  const variables = await extractVariables(fileKey);
+  
+  // WHILE we have file context, count components per page (metadata only)
+  for (let i = 0; i < densityData.totalPages; i++) {
+    const page = figma.root.children[i];
+    await figma.setCurrentPageAsync(page);
+    
+    // Lightweight count (no property extraction, just node type check)
+    const componentSets = page.findAll(n => n.type === 'COMPONENT_SET').length;
+    const standaloneComponents = page.findAll(n => 
+      n.type === 'COMPONENT' && (!n.parent || n.parent.type !== 'COMPONENT_SET')
+    ).length;
+    
+    densityData.componentsPerPage.push({
+      pageIndex: i,
+      pageName: page.name,
+      componentSets,
+      standaloneComponents,
+      total: componentSets + standaloneComponents
+    });
+    
+    densityData.totalComponentSets += componentSets;
+    densityData.totalComponents += standaloneComponents;
+  }
+  
+  // Calculate density tier
+  const avgComponentsPerPage = densityData.totalComponentSets / densityData.totalPages;
+  densityData.tier = classifyDensityTier(avgComponentsPerPage, densityData.totalComponentSets);
+  
+  return { variables, densityData };
+}
+```
+
+**Fallback on Failure**:
+
+If density detection fails (error during page iteration or component counting), fall back to safe MEDIUM tier:
+
+```javascript
+try {
+  const { variables, densityData } = await extractVariablesWithDensityDetection(fileKey);
+} catch (error) {
+  console.log(`⚠️  Density detection failed: ${error.message}`);
+  console.log(`   Falling back to MEDIUM tier (10-page batches)\n`);
+  
+  const densityData = {
+    tier: 'MEDIUM',
+    totalPages: figma.root.children.length,
+    totalComponentSets: null,
+    totalComponents: null,
+    fallback: true
+  };
+  
+  const variables = await extractVariables(fileKey); // Re-run without density detection
+  return { variables, densityData };
+}
+```
+
 **IMMEDIATELY after completing Pass 1, you MUST output this status message before starting Pass 2**:
 ```
 ✓ Pass 1 complete: Extracted [N] tokens ([colors], [typography], [spacing], [radius], [shadows], [motion])
+  Density: [N] component sets across [M] pages, [TIER] tier (avg: [X] per page)
 ```
 
 ---
