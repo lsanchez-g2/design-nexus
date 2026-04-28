@@ -535,59 +535,73 @@ async function handleExtremeDensity(fileKey, densityData) {
 
 async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
   const startTime = Date.now();
-  const allComponents = {};
   
   let currentBatchSize = batchPlan.initialSize;
-  let currentPage = 0;
-  let batchNumber = 1;
+  let batchNum = 1;
+  const allComponents = {};
+  let totalElapsedTime = 0;
+  let lastEstimate = 0;
+  const totalPages = densityData.totalPages;
   
-  while (currentPage < densityData.totalPages) {
-    const endPage = Math.min(currentPage + currentBatchSize, densityData.totalPages);
-    const pagesInBatch = endPage - currentPage;
-    
-    console.log(`\n📦 Batch ${batchNumber}: Pages ${currentPage + 1}-${endPage} (${pagesInBatch} pages, batch size: ${currentBatchSize})`);
-    
+  for (let startPage = 0; startPage < totalPages; startPage += currentBatchSize) {
+    const endPage = Math.min(startPage + currentBatchSize, totalPages);
     const batchStartTime = Date.now();
     
+    // Calculate dynamic total batches (changes if batch size adjusts)
+    const remainingPages = totalPages - startPage;
+    const totalBatches = batchNum + Math.ceil(remainingPages / currentBatchSize) - 1;
+    
     try {
-      // Extract batch with timeout monitoring
-      const batchData = await extractBatch(fileKey, currentPage, endPage);
+      // Extract batch with retry wrapper
+      const batchData = await callFigmaWithRetry(() => 
+        extractBatch(fileKey, startPage, endPage)
+      );
       
       const batchDuration = (Date.now() - batchStartTime) / 1000;
+      totalElapsedTime += batchDuration;
       
       // Merge components
       Object.assign(allComponents, batchData.components);
       
-      // Display smart progress (Task 4 will implement this)
-      displaySmartProgress(currentPage, densityData.totalPages, batchDuration, densityData.tier);
-      
-      console.log(`  ✓ Batch ${batchNumber} complete (${batchDuration.toFixed(1)}s, ${Object.keys(batchData.components).length} components)\n`);
+      // Display smart progress
+      displaySmartProgress(
+        batchNum, 
+        totalBatches, 
+        startPage, 
+        endPage, 
+        batchDuration, 
+        totalElapsedTime,
+        lastEstimate,
+        allComponents,
+        densityData
+      );
       
       // Adaptive batch sizing: if batch took >40s, halve size (minimum 5)
       if (batchDuration > 40 && currentBatchSize > batchPlan.minSize) {
-        const newSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
-        console.log(`⚡ Batch duration high (${batchDuration.toFixed(1)}s) — reducing batch size: ${currentBatchSize} → ${newSize} pages\n`);
-        currentBatchSize = newSize;
+        console.log(`⚠️  Batch ${batchNum} took ${batchDuration.toFixed(1)}s (>40s threshold)`);
+        console.log(`   Reducing batch size: ${currentBatchSize} → ${Math.floor(currentBatchSize / 2)} pages\n`);
+        currentBatchSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
       }
       
-      currentPage = endPage;
-      batchNumber++;
+      batchNum++;
       
     } catch (error) {
-      console.log(`  ✗ Batch ${batchNumber} failed: ${error.message}`);
+      console.log(`❌ Batch ${batchNum} failed: ${error.message}`);
       
       // Retry logic: halve batch size and retry
       if (currentBatchSize > batchPlan.minSize) {
         const newSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
         console.log(`  ↻ Retrying with reduced batch size: ${currentBatchSize} → ${newSize} pages\n`);
         currentBatchSize = newSize;
-        // Don't increment currentPage — retry same range with smaller batch
+        // Don't increment startPage — for loop will retry same range with smaller batch
+        startPage -= currentBatchSize; // Counteract the for loop increment
       } else {
         // At minimum batch size, can't reduce further
-        throw new Error(
-          `Extraction failed at minimum batch size (${batchPlan.minSize} pages). ` +
-          `Try: (1) Strategic sampling, (2) Reduce file complexity in Figma, (3) Split file into smaller files.`
-        );
+        console.log(`\n❌ Critical: Batch failed at minimum size (5 pages)`);
+        console.log(`   File density: ${densityData.totalComponentSets} component sets`);
+        console.log(`   Recommendation: Use strategic sampling mode\n`);
+        
+        throw new Error(`File too dense for extraction (failed at 5-page minimum): ${error.message}`);
       }
     }
   }
