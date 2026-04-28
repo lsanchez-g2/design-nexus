@@ -572,7 +572,7 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
       Object.assign(allComponents, batchData.components);
       
       // Display smart progress
-      displaySmartProgress(
+      lastEstimate = displaySmartProgress(
         batchNum, 
         totalBatches, 
         startPage, 
