@@ -577,10 +577,10 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
       );
       
       // Adaptive batch sizing: if batch took >40s, halve size (minimum 5)
-      if (batchDuration > 40 && currentBatchSize > batchPlan.minSize) {
+      if (batchDuration > 40 && currentBatchSize > 5) {
         console.log(`⚠️  Batch ${batchNum} took ${batchDuration.toFixed(1)}s (>40s threshold)`);
         console.log(`   Reducing batch size: ${currentBatchSize} → ${Math.floor(currentBatchSize / 2)} pages\n`);
-        currentBatchSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
+        currentBatchSize = Math.max(5, Math.floor(currentBatchSize / 2));
       }
       
       batchNum++;
@@ -589,12 +589,11 @@ async function extractComponentsAdaptive(fileKey, densityData, batchPlan) {
       console.log(`❌ Batch ${batchNum} failed: ${error.message}`);
       
       // Retry logic: halve batch size and retry
-      if (currentBatchSize > batchPlan.minSize) {
-        const newSize = Math.max(Math.floor(currentBatchSize / 2), batchPlan.minSize);
-        console.log(`  ↻ Retrying with reduced batch size: ${currentBatchSize} → ${newSize} pages\n`);
-        currentBatchSize = newSize;
-        // Don't increment startPage — for loop will retry same range with smaller batch
-        startPage -= currentBatchSize; // Counteract the for loop increment
+      if (currentBatchSize > 5) {
+        console.log(`   Retrying with ${Math.floor(currentBatchSize / 2)} pages\n`);
+        
+        currentBatchSize = Math.max(5, Math.floor(currentBatchSize / 2));
+        continue;
       } else {
         // At minimum batch size, can't reduce further
         console.log(`\n❌ Critical: Batch failed at minimum size (5 pages)`);
