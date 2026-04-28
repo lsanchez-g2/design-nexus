@@ -1,0 +1,38 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T11:50:58.212Z",
+  "figma": {
+    "fileKey": "HJQ37u39fbyhMyknEq7JGr",
+    "fileName": "Duolingo Design System",
+    "fileUrl": "https://www.figma.com/design/HJQ37u39fbyhMyknEq7JGr/Duolingo-Design-System"
+  },
+  "components": {
+    "Phone": {"type": "COMPONENT", "id": "11:4092", "name": "Phone", "page": "Components"},
+    "Section Header": {"type": "COMPONENT", "id": "11:1934", "name": "Section Header", "page": "Components"},
+    "Flag Selection": {"type": "COMPONENT", "id": "8:1025", "name": "Flag Selection", "page": "Components"},
+    "Header Counter": {"type": "COMPONENT", "id": "8:583", "name": "Header Counter", "page": "Components"},
+    "Tasks": {"type": "COMPONENT_SET", "id": "8:2482", "name": "Tasks", "page": "Components", "properties": [{"name": "Completed", "type": "VARIANT"}, {"name": "Placement", "type": "VARIANT"}]},
+    "Day Tracker": {"type": "COMPONENT_SET", "id": "8:3050", "name": "Day Tracker", "page": "Components", "properties": [{"name": "State", "type": "VARIANT"}]},
+    "Check": {"type": "COMPONENT_SET", "id": "8:2074", "name": "Check", "page": "Components", "properties": [{"name": "Property 1", "type": "VARIANT"}]},
+    "Level Icon": {"type": "COMPONENT_SET", "id": "9:802", "name": "Level Icon", "page": "Components", "properties": [{"name": "Property 1", "type": "VARIANT"}, {"name": "Available", "type": "VARIANT"}]},
+    "Level": {"type": "COMPONENT_SET", "id": "9:725", "name": "Level", "page": "Components", "properties": [{"name": "Property 1", "type": "VARIANT"}]},
+    "Flag": {"type": "COMPONENT_SET", "id": "8:493", "name": "Flag", "page": "Components", "properties": [{"name": "Language", "type": "VARIANT"}, {"name": "Size", "type": "VARIANT"}]},
+    "Icons": {"type": "COMPONENT_SET", "id": "8:552", "name": "Icons", "page": "Components", "properties": [], "hasErrors": true, "errorMessage": "Component set has existing errors in Figma"},
+    "Selected Language": {"type": "COMPONENT_SET", "id": "8:790", "name": "Selected Language", "page": "Components", "properties": [{"name": "Property 1", "type": "VARIANT"}]},
+    "Button": {"type": "COMPONENT_SET", "id": "8:1085", "name": "Button", "page": "Components", "properties": [{"name": "Type", "type": "VARIANT"}, {"name": "Active", "type": "VARIANT"}, {"name": "Icon", "type": "VARIANT"}]},
+    "Progress Bar": {"type": "COMPONENT_SET", "id": "8:1124", "name": "Progress Bar", "page": "Components", "properties": [{"name": "Progress", "type": "VARIANT"}, {"name": "With Text", "type": "VARIANT"}]},
+    "Bottom Nav Button": {"type": "COMPONENT_SET", "id": "8:1299", "name": "Bottom Nav Button", "page": "Components", "properties": [{"name": "Selected", "type": "VARIANT"}]}
+  },
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": 185,
+    "totalVariables": 64,
+    "componentSets": 22,
+    "standaloneComponents": 162,
+    "skippedComponents": 1,
+    "notes": "Baseline snapshot created. 1 component set ('Icons') has existing errors in Figma and was skipped during property extraction. All other component sets extracted successfully with error handling."
+  }
+}

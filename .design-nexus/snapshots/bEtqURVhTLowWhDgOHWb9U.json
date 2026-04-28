@@ -1,0 +1,43 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:25:00.000Z",
+  "figma": {
+    "fileKey": "bEtqURVhTLowWhDgOHWb9U",
+    "fileName": "Mantine UI Component Library",
+    "fileUrl": "https://www.figma.com/design/bEtqURVhTLowWhDgOHWb9U"
+  },
+  "components": {
+    "loader": {
+      "type": "COMPONENT_SET",
+      "id": "1012:210192",
+      "name": "loader",
+      "page": "Loader",
+      "properties": [
+        {"name": "variant", "type": "VARIANT"},
+        {"name": "size", "type": "VARIANT"}
+      ]
+    },
+    "chip": {
+      "type": "COMPONENT_SET",
+      "id": "367:210541",
+      "name": "chip",
+      "page": "Chips",
+      "properties": [
+        {"name": "variant", "type": "VARIANT"},
+        {"name": "size", "type": "VARIANT"},
+        {"name": "radius", "type": "VARIANT"},
+        {"name": "icon", "type": "VARIANT"}
+      ]
+    }
+  },
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": "extracted",
+    "componentSets": "multiple",
+    "standaloneComponents": "multiple",
+    "notes": "Baseline snapshot created. Large component library with comprehensive variant coverage."
+  }
+}

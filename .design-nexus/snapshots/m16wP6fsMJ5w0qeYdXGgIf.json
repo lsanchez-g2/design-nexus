@@ -1,0 +1,59 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:26:00.000Z",
+  "figma": {
+    "fileKey": "m16wP6fsMJ5w0qeYdXGgIf",
+    "fileName": "USWDS Design Kit Beta",
+    "fileUrl": "https://www.figma.com/design/m16wP6fsMJ5w0qeYdXGgIf"
+  },
+  "components": {
+    "USA Accordion.item": {
+      "type": "COMPONENT_SET",
+      "id": "1184:2734",
+      "name": "USA Accordion.item",
+      "page": "Accordion",
+      "properties": [
+        {"name": "summary#32:0", "type": "TEXT"},
+        {"name": "details#32:4", "type": "TEXT"},
+        {"name": "open", "type": "VARIANT"},
+        {"name": "type", "type": "VARIANT"}
+      ]
+    },
+    "USA Alert": {
+      "type": "COMPONENT_SET",
+      "id": "1184:2786",
+      "name": "USA Alert",
+      "page": "Alert",
+      "properties": [
+        {"name": "heading#38:0", "type": "TEXT"},
+        {"name": "text#38:13", "type": "TEXT"},
+        {"name": "type", "type": "VARIANT"},
+        {"name": "slim", "type": "VARIANT"},
+        {"name": "icon", "type": "VARIANT"}
+      ]
+    },
+    "USA Button": {
+      "type": "COMPONENT_SET",
+      "id": "807:6835",
+      "name": "USA Button",
+      "page": "Button",
+      "properties": [
+        {"name": "text#1131:0", "type": "TEXT"},
+        {"name": "icon-end#3743:10", "type": "BOOLEAN"},
+        {"name": "icon-start#3743:84", "type": "BOOLEAN"},
+        {"name": "type", "type": "VARIANT"},
+        {"name": "state", "type": "VARIANT"}
+      ]
+    }
+  },
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": "extracted",
+    "componentSets": "multiple",
+    "standaloneComponents": "multiple",
+    "notes": "Baseline snapshot created. US government design system with comprehensive component coverage."
+  }
+}

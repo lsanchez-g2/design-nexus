@@ -1,0 +1,20 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:29:00.000Z",
+  "figma": {
+    "fileKey": "qu591tdrvTTdtYNmHlwNm0",
+    "fileName": "Carbon Design System v11 (IBM)",
+    "fileUrl": "https://www.figma.com/design/qu591tdrvTTdtYNmHlwNm0"
+  },
+  "components": {},
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": "not extracted (file too large)",
+    "pageCount": 54,
+    "totalVariables": "not extracted",
+    "notes": "Baseline snapshot created. IBM's Carbon Design System v11. File accessible but too large for full extraction (54 pages). Future enhancement: paginated extraction for large files."
+  }
+}

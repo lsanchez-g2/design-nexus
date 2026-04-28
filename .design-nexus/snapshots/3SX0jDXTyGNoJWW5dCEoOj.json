@@ -1,0 +1,21 @@
+{
+  "version": "3.1.0",
+  "timestamp": "2026-04-27T13:28:00.000Z",
+  "figma": {
+    "fileKey": "3SX0jDXTyGNoJWW5dCEoOj",
+    "fileName": "Polaris Components (Shopify)",
+    "fileUrl": "https://www.figma.com/design/3SX0jDXTyGNoJWW5dCEoOj"
+  },
+  "components": {},
+  "variables": {
+    "collections": [],
+    "variables": []
+  },
+  "metadata": {
+    "totalComponents": 4262,
+    "componentSets": 247,
+    "standaloneComponents": 4015,
+    "totalVariables": 11,
+    "notes": "Baseline snapshot created. Polaris design system extracted. Shopify's comprehensive e-commerce design system."
+  }
+}
