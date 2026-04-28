@@ -1104,14 +1104,12 @@ function displaySmartProgress(
     } else {
       console.log(`   Total extraction time: ${totalElapsedTime.toFixed(1)}s\n`);
     }
-    
-    lastEstimate = estimatedTimeRemaining;
   } else {
     // Quiet mode: single-line spinner update
     process.stdout.write(`\r⏳ Progress: ${percentComplete}% (batch ${batchNum}/${totalBatches}, ~${estimatedTimeRemaining}s remaining)`);
   }
   
-  return lastEstimate; // Return updated estimate for next call
+  return estimatedTimeRemaining; // Always return current estimate for delta tracking
 }
 ```
 
