@@ -868,12 +868,11 @@ async function extractWithPagination(fileKey, totalPages, batchSize, densityData
   let allVariables = null;
   let currentPage = (startBatch - 1) * currentBatchSize;
   let batchNum = startBatch;
+  let lastEstimate = 0; // For smart progress tracking (v3.3.0)
   
   while (currentPage < totalPages) {
     const endPage = Math.min(currentPage + currentBatchSize, totalPages);
     const pagesInBatch = endPage - currentPage;
-    
-    displayBatchProgress(batchNum, totalBatches, currentPage, endPage);
     
     const batchStartTime = Date.now();
     
@@ -883,7 +882,7 @@ async function extractWithPagination(fileKey, totalPages, batchSize, densityData
         extractBatch(fileKey, currentPage, endPage)
       );
       
-      const batchDuration = ((Date.now() - batchStartTime) / 1000).toFixed(1);
+      const batchDuration = (Date.now() - batchStartTime) / 1000;
       
       // Save partial snapshot
       await savePartialSnapshot(fileKey, batchNum, batchData);
@@ -894,7 +893,19 @@ async function extractWithPagination(fileKey, totalPages, batchSize, densityData
         allVariables = batchData.variables; // Variables only extracted once (first batch)
       }
       
-      console.log(`  ✓ Batch ${batchNum} complete (${batchDuration}s, ${Object.keys(batchData.components).length} components)\n`);
+      // v3.3.0: Smart progress indicators with throttling
+      const totalElapsedTime = (Date.now() - startTime) / 1000;
+      lastEstimate = displaySmartProgress(
+        batchNum,
+        totalBatches,
+        currentPage,
+        endPage,
+        batchDuration,
+        totalElapsedTime,
+        lastEstimate,
+        allComponents,
+        densityData
+      );
       
       // v3.3.0: Adaptive batch sizing — if batch took >40s, halve size (minimum 5)
       if (parseFloat(batchDuration) > 40 && currentBatchSize > minBatchSize) {
@@ -1044,9 +1055,63 @@ async function ensureDirectory(dirPath) {
   }
 }
 
-function displayBatchProgress(batchNum, totalBatches, startPage, endPage) {
-  const percent = Math.round((batchNum / totalBatches) * 100);
-  console.log(`[Batch ${batchNum}/${totalBatches} — ${percent}%] Processing pages ${startPage}-${endPage - 1}...`);
+/**
+ * Smart Progress Indicators (v3.3.0)
+ * 
+ * Shows detailed updates at milestones, quiet spinner otherwise.
+ * 
+ * Throttling rationale:
+ * - Learning phase (first 5 batches): Establish ETA baseline
+ * - Milestones (25%, 50%, 75%, 100%): User check-in points
+ * - ETA changes >10s: Significant slowdown/speedup warrants update
+ * - Otherwise: Quiet spinner to avoid flooding terminal on 200-page files
+ */
+function displaySmartProgress(
+  batchNum, 
+  totalBatches, 
+  startPage, 
+  endPage, 
+  batchDuration, 
+  totalElapsedTime,
+  lastEstimate,
+  allComponents,
+  densityData
+) {
+  const percentComplete = Math.round((batchNum / totalBatches) * 100);
+  const componentsExtracted = Object.keys(allComponents).length;
+  
+  // Calculate ETA
+  const avgBatchDuration = totalElapsedTime / batchNum;
+  const remainingBatches = totalBatches - batchNum;
+  const estimatedTimeRemaining = Math.round(avgBatchDuration * remainingBatches);
+  
+  // Determine if detailed update is needed
+  const shouldDisplayDetailed = (
+    batchNum <= 5 ||                                          // Learning phase (first 5 batches)
+    percentComplete === 25 || percentComplete === 50 || 
+    percentComplete === 75 || percentComplete === 100 ||      // Milestones
+    Math.abs(estimatedTimeRemaining - lastEstimate) > 10      // Significant ETA change (>10s)
+  );
+  
+  if (shouldDisplayDetailed) {
+    // Detailed update
+    console.log(`\n📦 Batch ${batchNum}/${totalBatches} complete (${percentComplete}% done)`);
+    console.log(`   Pages ${startPage}-${endPage - 1} extracted in ${batchDuration.toFixed(1)}s`);
+    console.log(`   Component sets extracted: ${componentsExtracted}`);
+    
+    if (batchNum < totalBatches) {
+      console.log(`   Estimated time remaining: ~${estimatedTimeRemaining}s\n`);
+    } else {
+      console.log(`   Total extraction time: ${totalElapsedTime.toFixed(1)}s\n`);
+    }
+    
+    lastEstimate = estimatedTimeRemaining;
+  } else {
+    // Quiet mode: single-line spinner update
+    process.stdout.write(`\r⏳ Progress: ${percentComplete}% (batch ${batchNum}/${totalBatches}, ~${estimatedTimeRemaining}s remaining)`);
+  }
+  
+  return lastEstimate; // Return updated estimate for next call
 }
 ```
 
